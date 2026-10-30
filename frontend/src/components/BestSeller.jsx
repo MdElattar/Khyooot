@@ -31,9 +31,8 @@ const BestSeller = () => {
                 <div className="w-16 h-[2px] bg-gray-900 mx-auto mt-3" />
             </div>
 
-            {/* 4. Conditional Rendering: Products or Typewriter Animation Message */}
+            {/* 4. Conditional Rendering: Products or Responsive Message */}
             {bestSeller.length > 0 ? (
-                // تم تعديل الـ Grid هنا ليكون متجاوباً ومناسباً للحجم (2 على الموبايل، 3 للإي باد، 4-5 للابتوب)
                 <div className='grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8 mt-6'>
                     {
                         bestSeller.map((item, index) => (
@@ -48,8 +47,9 @@ const BestSeller = () => {
                     }
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center py-20 text-center">
-                    <p className="text-lg sm:text-xl font-medium text-gray-600 tracking-wider overflow-hidden whitespace-nowrap border-r-2 border-gray-800 animate-typing">
+                <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+                    {/* تم إزالة whitespace-nowrap وجعل النص يتجاوب مع الشاشات الصغيرة */}
+                    <p className="text-sm sm:text-lg font-medium text-gray-600 tracking-wide leading-relaxed max-w-xl">
                         Sorry, our luxury pieces in this category are currently sold out and being crafted anew...
                     </p>
                 </div>
