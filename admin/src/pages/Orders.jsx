@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { assets } from "../assets/admin_assets/assets";
 import axios from "axios";
-import { backendUrl, currency } from "../App";
+import { currency } from "../App";
 import { toast } from "react-toastify";
+
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
 const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
