@@ -1,7 +1,9 @@
 import { useState } from "react";
 import axios from "axios";
-import { backendUrl } from "../App";
 import { toast } from "react-toastify";
+
+// قراءة رابط الباك إند من متغيرات البيئة أو جعله مساراً نسبياً ليعمل عبر Nginx Proxy بسلاسة
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
 const Login = ({ setToken }) => {
   const [email, setEmail] = useState("");
@@ -12,7 +14,7 @@ const Login = ({ setToken }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post(backendUrl + "/api/user/admin", {
+      const response = await axios.post(`${backendUrl}/api/user/admin`, {
         email,
         password,
       });
