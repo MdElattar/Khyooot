@@ -1,6 +1,7 @@
-// Footer.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
+import tiktokIcon from '../assets/frontend_assets/tik-tok.png';
+import instagramIcon from '../assets/frontend_assets/instagram.png';
 
 const Footer = () => {
   const footerLinks = [
@@ -57,7 +58,7 @@ const Footer = () => {
                 className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1" 
                 aria-label="Tiktok"
               >
-                <img className="w-5 h-5 filter brightness-200 invert" src="src/assets/frontend_assets/tik-tok.png" alt="TikTok" />
+                <img className="w-5 h-5 filter brightness-200 invert" src={tiktokIcon} alt="TikTok" />
               </a>
               
               <a 
@@ -67,7 +68,7 @@ const Footer = () => {
                 className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all duration-300 transform hover:-translate-y-1" 
                 aria-label="Instagram"
               >
-                <img className="w-5 h-5 filter brightness-200 invert" src="src/assets/frontend_assets/instagram.png" alt="Instagram" />
+                <img className="w-5 h-5 filter brightness-200 invert" src={instagramIcon} alt="Instagram" />
               </a>
             </div>
           </div>

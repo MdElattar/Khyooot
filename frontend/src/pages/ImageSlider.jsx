@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
-import Collection from './Collection';
-import { assets } from '../assets/frontend_assets/assets';
 
-// --- Placeholder Slides Data ---
+// --- استيراد الصور بطريقة صحيحة تضمن ظهورها في الـ Build ---
+import jacketsImg from '../assets/frontend_assets/jackets.jpeg';
+import arabianImg from '../assets/frontend_assets/ArabianBurghandy.jpeg';
+import babyteeImg from '../assets/frontend_assets/Babytee3.jpeg';
+
+// --- Slides Data with Imported Images ---
 const slides = [
-    { url: 'src/assets/frontend_assets/jackets.jpeg', title: 'KHYOOT BLACLAVA' },
-    { url: 'src/assets/frontend_assets/ArabianBurghandy.jpeg', title: 'KHYOOT ARABIAN WEAVE' }, 
-    { url: 'src/assets/frontend_assets/Babytee3.jpeg', title: 'KHYOOT BABETEE' },
+    { url: jacketsImg, title: 'KHYOOT BLACLAVA' },
+    { url: arabianImg, title: 'KHYOOT ARABIAN WEAVE' }, 
+    { url: babyteeImg, title: 'KHYOOT BABETEE' },
 ];
 
 const ImageSlider = ({ autoPlay = true, interval = 5000 }) => {

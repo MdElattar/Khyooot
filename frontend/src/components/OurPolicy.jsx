@@ -1,4 +1,7 @@
 import React from 'react';
+import exchangeIcon from '../assets/frontend_assets/exchange_icon.png';
+import qualityIcon from '../assets/frontend_assets/quality_icon.png';
+import supportIcon from '../assets/frontend_assets/support_img.png';
 
 const OurPolicy = () => {
   return (
@@ -14,10 +17,10 @@ const OurPolicy = () => {
         
         {/* Feature 1: Easy Exchange Policy */}
         <div className="group relative bg-white/70 backdrop-blur-xl border border-gray-100 p-8 rounded-3xl shadow-xl shadow-black/[0.03] hover:shadow-2xl hover:shadow-black/[0.08] transition-all duration-500 transform hover:-translate-y-2 text-center animate-fade-in-up">
-          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gray-50 group-hover:bg-[#003459] transition-colors duration-500 shadow-inner">
+          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-[#003459] shadow-inner transition-colors duration-500">
             <img 
-              src="src/assets/frontend_assets/exchange_icon.png" 
-              className="w-8 h-8 object-contain filter group-hover:brightness-200 group-hover:invert transition-all duration-500" 
+              src={exchangeIcon} 
+              className="w-8 h-8 object-contain brightness-200 invert transition-all duration-500" 
               alt="Exchange Icon" 
             />
           </div>
@@ -27,10 +30,10 @@ const OurPolicy = () => {
 
         {/* Feature 2: 7 Days Return Policy */}
         <div className="group relative bg-white/70 backdrop-blur-xl border border-gray-100 p-8 rounded-3xl shadow-xl shadow-black/[0.03] hover:shadow-2xl hover:shadow-black/[0.08] transition-all duration-500 transform hover:-translate-y-2 text-center animate-fade-in-up delay-150">
-          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gray-50 group-hover:bg-[#003459] transition-colors duration-500 shadow-inner">
+          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-[#003459] shadow-inner transition-colors duration-500">
             <img 
-              src="src/assets/frontend_assets/quality_icon.png" 
-              className="w-8 h-8 object-contain filter group-hover:brightness-200 group-hover:invert transition-all duration-500" 
+              src={qualityIcon} 
+              className="w-8 h-8 object-contain brightness-200 invert transition-all duration-500" 
               alt="Quality Icon" 
             />
           </div>
@@ -40,10 +43,10 @@ const OurPolicy = () => {
 
         {/* Feature 3: Best Customer Support */}
         <div className="group relative bg-white/70 backdrop-blur-xl border border-gray-100 p-8 rounded-3xl shadow-xl shadow-black/[0.03] hover:shadow-2xl hover:shadow-black/[0.08] transition-all duration-500 transform hover:-translate-y-2 text-center animate-fade-in-up delay-300">
-          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-gray-50 group-hover:bg-[#003459] transition-colors duration-500 shadow-inner">
+          <div className="w-16 h-16 mx-auto mb-6 flex items-center justify-center rounded-2xl bg-[#003459] shadow-inner transition-colors duration-500">
             <img 
-              src="src/assets/frontend_assets/support_img.png" 
-              className="w-8 h-8 object-contain filter group-hover:brightness-200 group-hover:invert transition-all duration-500" 
+              src={supportIcon} 
+              className="w-8 h-8 object-contain brightness-200 invert transition-all duration-500" 
               alt="Support Icon" 
             />
           </div>
