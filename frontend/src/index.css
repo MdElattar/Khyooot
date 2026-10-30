@@ -1,0 +1,660 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Prata&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-layout main {
+  flex: 1;
+}
+
+/* html {
+  scroll-behavior: smooth;
+}
+
+body {
+  transition: background 0.3s ease, color 0.3s ease;
+} */
+
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+*{
+  font-family: Outfit;
+}
+
+header {
+    height: 90px;
+    
+    
+}
+header hr:hover{
+    width:100% ;
+    transition:  0.3s ease-out, 0.3s ease-out;
+}
+/* header hr:after{
+
+} */
+a.active hr{
+    display: block;
+}
+
+
+.menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;       /* FULL HEIGHT */
+  background-color: #0b3b5a; /* your blue */
+  z-index: 9999;
+  overflow-y: auto;   /* allow menu scroll if content is long */
+}
+
+
+
+
+/* .side-bar{
+    
+} */
+
+ /* @media screen and (min-width: 1023px) and (max-width: 1280px) {
+   .nav{
+    margin-right: auto; 
+  }
+   .icons{
+    margin-left: auto;
+    display: flex;
+    margin-top: -70px;
+  }
+   
+
+  
+}  */
+
+/* Hero secton  */
+
+
+
+/* footer{
+  margin-top: 15px;
+} */
+
+/* --- Global Section Styling --- */
+.new-collection-section {
+    padding: 60px 20px;
+    text-align: center;
+    max-width: 1200px; /* Max width to center content */
+    margin: 0 auto;
+}
+
+.section-title {
+    font-size: 2em;
+    font-weight: 500;
+    margin-bottom: 40px;
+    display: inline-block; /* Allows underline to be positioned centrally */
+}
+
+.title-underline {
+    width: 50px;
+    height: 2px;
+    background-color: black;
+    margin: 8px auto 0;
+}
+
+
+/* --- Grid Structure --- */
+.collection-grid {
+    display: grid;
+    /* Define the columns: first column is 1fr, the rest auto-fit for flexibility */
+    grid-template-columns: repeat(3, 1fr); 
+    grid-template-rows: repeat(2, 350px); /* Fixed height for rows */
+    gap: 15px;
+}
+
+/* Make the first item span two columns (Hoodies) */
+.collection-item.item-1 {
+    grid-column: 1 / 3;
+}
+
+/* Item 2 (T-shirts) stays in column 3, row 1 */
+
+
+/* --- Individual Item Styling --- */
+.collection-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    margin:-5px;
+}
+
+.item-overlay {
+    /* Subtle dark overlay for contrast and hover effect */
+    background-color: rgba(0, 0, 0, 0.2); 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.collection-item:hover .item-overlay {
+    /* Darken slightly on hover */
+    background-color: rgba(0, 0, 0, 0.4); 
+}
+
+.item-name {
+    font-size: 1.4em;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+}
+
+.collection{
+  margin-top: 100px;
+
+}
+
+@media  (min-width: 1023px) {
+  .hid{
+    display: block;
+  }
+}
+
+@media  screen and (min-width: 343px) and  (max-width: 377px) {
+  
+  .icons{
+    margin-left: auto;
+    display: flex;
+    margin-top: -37px;
+  } 
+}
+
+@media (max-width: 343px) {
+  .icons{
+    margin-left: auto;
+    
+  } 
+  
+}
+@media (max-width: 433px) {
+  .icons{
+    margin-left: auto;
+    display: flex;
+    margin-top: 0px;
+  } 
+  
+}
+ 
+@media  (max-width: 1023px) {
+  .khyoot{
+    margin-left: 130px;
+  }
+  
+} 
+@media  (max-width: 485px) {
+  .drop-menu{
+    margin-right: -120px;
+  }
+  
+} 
+@media  (max-width: 376px) {
+  .icons{
+    margin-left: -3px;
+    margin-right: 10px;
+  }
+  
+} 
+@media (max-width:320px) {
+  .menu{
+    height:1000px;
+  }
+}
+
+
+/* Product Id */
+.img-product{
+  border-radius: 4px;
+}
+
+@media (max-width:1020px) {
+    .img-product{
+      height: 220px;
+      width: 100%;
+    }
+  }
+@media (min-width:1020px)  {
+    .img-product{
+      height: 380px;
+      width: 330px;
+    }
+  }
+@media  screen and (min-width: 1024px) and  (max-width: 1219px) {
+    .img-product{
+      height: 200px;
+      width: 250px;
+    }
+  }
+@media  screen and (min-width: 639px) and  (max-width: 683px) {
+    .img-product{
+      height: 250px;
+      width: 200px;
+      
+    }
+  }
+@media (max-width:639px){
+  .miin{
+    min-width: 100%;
+  }
+}
+
+.product-id{
+  margin-top: 100px;
+  margin-bottom: 100px;
+}
+::-webkit-scrollbar{
+  display: none;
+}
+
+/* --- Professional Slider Styles --- */
+
+.professional-slider-container {
+    margin-top: 90px;
+    height: 700px; /* High enough for a professional hero section */
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0; /* Fallback color */
+}
+
+/* Main Image/Content Area */
+.slide-content-area {
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: background-image 0.5s ease-in-out; 
+    /* The image itself is the background */
+    
+    /* Subtle overlay to help text readability */
+    box-shadow: inset 0 0 0 1000px rgba(0, 0, 0, 0.1); 
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Center content vertically */
+}
+
+/* Content Overlay (Text and Button) */
+.slide-overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    color: white;
+    z-index: 10;
+}
+
+.overlay-title {
+    font-size: 1.8em;
+    font-weight: 500;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+/* Shop Now Button */
+.shop-now-button {
+    background-color: white;
+    color: black;
+    border: none;
+    padding: 10px 25px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+    letter-spacing: 1px;
+}
+
+.shop-now-button:hover {
+    background-color: #e0e0e0;
+}
+
+
+/* --- Bottom Navigation Area --- */
+.bottom-nav-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* To cover most of the bottom area */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 20;
+}
+
+/* Arrows */
+.bottom-arrow {
+    font-size: 1.5em;
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    transition: color 0.3s;
+}
+
+.bottom-arrow:hover {
+    color: #ccc;
+}
+
+/* Dots */
+.bottom-dots-container {
+    display: flex;
+    gap: 10px;
+}
+
+.slider-dot {
+    width: 8px;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.5); /* Inactive dot */
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.slider-dot.active {
+    background-color: white; /* Active dot */
+    transform: scale(1.2);
+}
+
+
+/* --- Split Feature Section Styles --- */
+.split-feature-section {
+    padding: 60px 20px;
+    background-color: white; /* Clean white background for contrast */
+}
+
+.split-feature-container {
+    /* Set a max width and center the container */
+    max-width: 1200px;
+    margin: 0 auto;
+    
+    /* Use Flexbox for the two columns */
+    display: flex;
+    align-items: center; /* Vertically center the content of both columns */
+    gap: 50px;
+}
+
+
+/* --- Left Column: Text and Button --- */
+.split-text-area {
+    /* Take up roughly 40% of the space */
+    flex: 2; 
+    padding: 20px 0;
+    text-align: left;
+}
+
+.split-subtitle {
+    font-size: 1.1em;
+    font-weight: 400;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #555;
+}
+
+.split-title {
+    font-size: 2.8em;
+    font-weight: 700;
+    margin-bottom: 30px;
+    line-height: 1.1;
+    letter-spacing: 1px;
+}
+
+.split-shop-now-button {
+    /* Black button, white text (as shown in the image) */
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background-color 0.3s;
+    letter-spacing: 1px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.split-shop-now-button:hover {
+    background-color: #333;
+}
+
+
+/* --- Right Column: Image --- */
+.split-image-area {
+    /* Take up roughly 60% of the space */
+    flex: 3; 
+    /* Ensures the image area doesn't get squashed */
+    line-height: 0; 
+}
+
+.feature-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    /* Optional: Add shadow/border for effect */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* --- Media Query for Smaller Screens (Optional but recommended) --- */
+@media (max-width: 768px) {
+    .split-feature-container {
+        flex-direction: column; /* Stacks text above image on small screens */
+        gap: 30px;
+    }
+    
+    .split-text-area {
+        order: 2; /* Move text below the image on mobile if preferred */
+        text-align: center;
+        padding: 0;
+    }
+
+    .split-image-area {
+        order: 1; /* Place image first on mobile */
+    }
+
+    .split-title {
+        font-size: 2em;
+    }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.3s ease-in-out;
+}
+
+.missing {
+  border: 1px solid #e53935;
+}
+
+.input {
+  @apply w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm
+  focus:outline-none focus:ring-2 focus:ring-black focus:border-black
+  transition;
+}
+
+input[type="radio"] {
+  accent-color: #2563eb;
+}
+
+.payment-slide {
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+}
+
+.payment-slide.closed {
+  max-height: 0;
+  opacity: 0;
+}
+
+.payment-slide.open {
+  max-height: 300px; /* enough to fit content */
+  opacity: 1;
+}
+
+.input {
+  @apply w-full mb-4 px-5 py-3 rounded-full border focus:outline-none;
+}
+
+.checkout-progress {
+  margin-bottom: 30px;
+}
+
+.labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-bottom: 6px;
+}
+
+.labels span {
+  color: #bdbdbd;
+  font-weight: 500;
+}
+
+.labels span.active {
+  color: #000;
+}
+
+.progress-line {
+  position: relative;
+  width: 100%;
+  height: 2px;
+  background: #e5e5e5;
+}
+
+.progress-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 33.333%;
+  height: 100%;
+  background: #000;
+  transition: transform 0.45s ease-in-out;
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-4px); }
+  40% { transform: translateX(4px); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* Footer Link */
+.elattar {
+  text-decoration: underline;
+}
+
+/* =========================================
+   MODERN LUXURY PILL TOAST (React-Toastify)
+   ========================================= */
+.Toastify__toast-container {
+  width: auto !important;
+  max-width: 90% !important;
+  padding: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: 24px !important;
+}
+
+.Toastify__toast {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+
+/* شكل الكبسولة الدائرية الحديثة والكريتيف */
+.custom-luxury-toast {
+  background: #0f172a !important; /* لون داكن لكسري فخم */
+  color: #ffffff !important;
+  border-radius: 9999px !important; /* دائري بالكامل كبسولة */
+  padding: 12px 24px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  font-size: 13.5px !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* إخفاء زر الإغلاق وشريط التقدم عشان يفضل الشكل ناعم ونظيف */
+.Toastify__close-button {
+  display: none !important;
+}
+
+/* إخفاء شريط التقدم بصريةً مع إبقائه يعمل تقنياً لإغلاق التوست في الوقت المحدد */
+.Toastify__progress-bar {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+}
+
+/* تخصيص الأيقونة الداخلية */
+.Toastify__toast-icon {
+  width: 20px !important;
+  margin-right: 0 !important;
+  color: #38bdf8 !important;
+}

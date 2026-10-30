@@ -1,0 +1,141 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+    font-family: Outfit;
+}
+
+select,
+input,
+textarea {
+  border: 1px solid #010932;
+  outline-color: #003;
+  border-radius: 4px;
+}
+
+/* ========== RESET DEFAULT BROWSER STYLES ========== */
+input,
+select,
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: #fff;
+  font-family: inherit;
+  font-size: 14px;
+}
+/* FIX CHECKBOX & RADIO */
+input[type="checkbox"],
+input[type="radio"] {
+  appearance: auto;
+  -webkit-appearance: auto;
+  -moz-appearance: auto;
+}
+
+
+/* ========== BASE INPUT STYLES ========== */
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid #c2c2c2;
+  border-radius: 4px;
+  outline: none;
+  transition: 
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
+}
+
+/* ========== FOCUS STYLES (KHYOOT THEME) ========== */
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #003;
+  box-shadow: 0 0 0 3px rgba(32, 24, 144, 0.18);
+  background-color: #fff;
+}
+
+/* ========== PLACEHOLDER STYLING ========== */
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;
+  font-size: 13px;
+}
+
+/* ========== SELECT DROPDOWN ARROW ========== */
+select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23999' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 12px;
+  cursor: pointer;
+}
+
+/* ========== MOBILE IMPROVEMENTS ========== */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* prevents iOS zoom */
+    padding: 10px;
+  }
+}
+
+/* =========================================
+   MODERN LUXURY PILL TOAST (Admin Panel)
+   ========================================= */
+.Toastify__toast-container {
+  width: auto !important;
+  max-width: 90% !important;
+  padding: 0 !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+}
+
+.Toastify__toast {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  margin-bottom: 0 !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+
+/* شكل الكبسولة الداكنة الفخمة */
+.custom-luxury-toast {
+  background: #0f172a !important; /* لون داكن فخم جداً */
+  color: #ffffff !important;
+  border-radius: 9999px !important; /* شكل كبسولة بالكامل */
+  padding: 12px 24px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  font-size: 13.5px !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* إخفاء زر الإغلاق والبروجرس بار مظهرياً مع تركه يعمل تقنياً لإغلاق التوست بعد ثانيتين */
+.Toastify__close-button {
+  display: none !important;
+}
+
+.Toastify__progress-bar {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  height: 0 !important;
+}
+
+/* لون الأيقونة داخل التوست */
+.Toastify__toast-icon {
+  width: 20px !important;
+  margin-right: 0 !important;
+  color: #38bdf8 !important;
+}
