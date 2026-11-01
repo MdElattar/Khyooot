@@ -12,10 +12,10 @@ const addProduct = async (req, res) => {
       subCategory,
       sizes,
       colors,
+      stock, // استلام حقل المخزون
       bestseller,
     } = req.body;
     
-
     const image1 = req.files.image1 && req.files.image1[0];
     const image2 = req.files.image2 && req.files.image2[0];
     const image3 = req.files.image3 && req.files.image3[0];
@@ -40,6 +40,7 @@ const addProduct = async (req, res) => {
       category,
       price: Number(price),
       subCategory,
+      stock: Number(stock) || 0, // حفظ المخزون كـ Number
       bestseller: bestseller === "true" ? true : false,
       sizes: sizes ? JSON.parse(sizes) : [],
       colors: colors ? JSON.parse(colors) : [],
@@ -47,24 +48,10 @@ const addProduct = async (req, res) => {
       date: Date.now(),
     };
 
-    console.log(productData);
-
     const product = new productModel(productData);
     await product.save();
 
-    console.log(
-      name,
-      description,
-      price,
-      category,
-      subCategory,
-      sizes,
-      colors,
-      bestseller
-    );
-    console.log(imagesUrl);
-
-    res.json({ success: true, message: "Product Added" });
+    res.json({ success: true, message: "Product Added Successfully" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -98,11 +85,37 @@ const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
     const product = await productModel.findById(productId);
-    res.json({ succes: false, message: error.message });
+    res.json({ success: true, product }); // تم تصحيح success إلى true وإرسال المنتج
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
 
-export { addProduct, listProducts, removeProduct, singleProduct };
+// Function for updating product details
+const updateProduct = async (req, res) => {
+  try {
+    const { id, name, description, price, category, subCategory, sizes, colors, stock, bestseller } = req.body;
+
+    const updateData = {
+      name,
+      description,
+      price: Number(price),
+      category,
+      subCategory,
+      stock: Number(stock),
+      bestseller: bestseller === "true" || bestseller === true,
+      sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes,
+      colors: typeof colors === "string" ? JSON.parse(colors) : colors,
+    };
+
+    await productModel.findByIdAndUpdate(id, updateData);
+    res.json({ success: true, message: "Product Updated Successfully" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
+export { addProduct, listProducts, removeProduct, singleProduct, updateProduct };
+

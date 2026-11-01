@@ -9,6 +9,7 @@ const productSchema = new mongoose.Schema({
     subCategory: { type: String, required: true },
     sizes: { type: Array, required: true },
     colors: { type: Array, required: true },
+    stock: { type: Number, required: true, default: 0 }, // خانة المخزون الجديدة
     bestseller: { type: Boolean },
     date: { type: Number, required: true }
 })

@@ -21,7 +21,6 @@ const Collection = () => {
     
     const toggleSubCategory = (e) => {
       if (subCategory.includes(e.target.value)) {
-        subCategory.forEach
         setSubCategory(prev => prev.filter(item => item !== e.target.value));
       } else {
         setSubCategory(prev => [...prev, e.target.value]);
@@ -37,6 +36,9 @@ const Collection = () => {
       if (subCategory.length > 0) {
         productsCopy = productsCopy.filter(item => subCategory.includes(item.subCategory));
       }
+
+      // ترتيب المنتجات بحيث الأحدث (الجديد) يظهر في الأعلى أولاً
+      productsCopy.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
 
       setFilterProducts(productsCopy);
     };
@@ -116,7 +118,7 @@ const Collection = () => {
                   Types
                 </p>
                 <div className='flex flex-col gap-3 text-sm font-medium text-gray-600'>
-                  {['Hoddies', 'TShirts', 'Babytees', 'Pants'].map((type, idx) => (
+                  {['Hoodies', 'Crownecks', 'Jackets', 'TShirts', 'Babetees', 'Pants'].map((type, idx) => (
                     <label key={idx} className='flex items-center gap-3 cursor-pointer hover:text-gray-900 transition-colors'>
                       <input 
                         className='w-4 h-4 rounded border-gray-300 text-[#003459] focus:ring-[#003459]' 
@@ -169,10 +171,11 @@ const Collection = () => {
                 {filterProducts.map((item, index) => (
                   <ProductItem 
                     key={index} 
-                    name={item.name} 
                     id={item._id} 
+                    name={item.name} 
                     price={item.price} 
                     image={item.image} 
+                    stock={item.stock} 
                   />
                 ))}
               </div>

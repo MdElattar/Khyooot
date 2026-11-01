@@ -29,6 +29,10 @@ const Product = () => {
   };
 
   const handleAddToCart = () => {
+    if (productData.stock <= 0) {
+      toast.error("This product is out of stock");
+      return;
+    }
     if (!currentSize && productData?.sizes?.length > 0) {
       toast.error("Please select a size");
       return;
@@ -102,9 +106,24 @@ const Product = () => {
             <p className="text-xs text-gray-500 tracking-wide font-medium">(122 Reviews)</p>
           </div>
 
-          {/* Price */}
-          <div className="mt-6 text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
-            {currency}{productData.price}
+          {/* Price & Stock Status */}
+          <div className="mt-6 flex items-center justify-between">
+            <div className="text-2xl sm:text-3xl font-light text-gray-900 tracking-tight">
+              {currency}{productData.price}
+            </div>
+            
+            {/* عرض حالة المخزون بذكاء */}
+            <div className="text-xs font-semibold tracking-wider uppercase">
+              {productData.stock > 0 ? (
+                <span className="text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                  In Stock ({productData.stock} available)
+                </span>
+              ) : (
+                <span className="text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200">
+                  Out of Stock
+                </span>
+              )}
+            </div>
           </div>
 
           <p className="mt-4 text-sm text-gray-600 leading-relaxed font-light">
@@ -166,16 +185,30 @@ const Product = () => {
           <div className="flex flex-col sm:flex-row gap-4 mt-2">
             <button
               onClick={handleAddToCart}
-              className="flex-1 bg-black text-white h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl hover:bg-neutral-800 active:scale-[0.99] transition-all shadow-lg shadow-black/10 flex items-center justify-center gap-2"
+              disabled={productData.stock <= 0}
+              className={`flex-1 h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 ${
+                productData.stock > 0 
+                  ? "bg-black text-white hover:bg-neutral-800 active:scale-[0.99] shadow-black/10 cursor-pointer" 
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+              }`}
             >
-              Add to Cart
+              {productData.stock > 0 ? "Add to Cart" : "Out of Stock"}
             </button>
             <button
               onClick={() => {
-                handleAddToCart();
-                navigate('/cart');
+                if (productData.stock > 0) {
+                  handleAddToCart();
+                  navigate('/cart');
+                } else {
+                  toast.error("This product is out of stock");
+                }
               }}
-              className="flex-1 border border-black text-black h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl hover:bg-black hover:text-white transition-all flex items-center justify-center gap-2"
+              disabled={productData.stock <= 0}
+              className={`flex-1 h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl transition-all flex items-center justify-center gap-2 ${
+                productData.stock > 0
+                  ? "border border-black text-black hover:bg-black hover:text-white cursor-pointer"
+                  : "border border-gray-200 text-gray-400 cursor-not-allowed"
+              }`}
             >
               Buy It Now
             </button>

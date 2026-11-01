@@ -14,6 +14,7 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
+  const [stock, setStock] = useState(""); // تعريف الـ state الخاصة بالمخزون
   const [category, setCategory] = useState("Men");
   const [subCategory, setSubCategory] = useState("Hoddies");
   const [bestseller, setBestSeller] = useState(false);
@@ -47,6 +48,7 @@ const Add = ({ token }) => {
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
+      formData.append("stock", stock); // إرسال المخزون مع الـ FormData
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
@@ -73,6 +75,7 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
+        setStock(""); // تصفير خانة المخزون
         setSizes([]);
         setColors([]);
       } else {
@@ -165,8 +168,8 @@ const Add = ({ token }) => {
         />
       </div>
 
-      {/* Category, Sub Category & Price */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
+      {/* Category, Sub Category, Price & Stock */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
         <div>
           <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
             Product Category
@@ -182,7 +185,7 @@ const Add = ({ token }) => {
           </select>
         </div>
 
-        <div>
+       <div>
           <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
             Sub Category
           </label>
@@ -191,9 +194,11 @@ const Add = ({ token }) => {
             value={subCategory}
             className={inputStyle}
           >
-            <option value="Hoddies">Hoodies</option>
+            <option value="Hoodies">Hoodies</option>
+            <option value="Crownecks">Crownecks</option>
+            <option value="Jackets">Jackets</option>
             <option value="TShirts">T-Shirts</option>
-            <option value="Babytees">Baby Tees</option>
+            <option value="Babetees">Babetees</option>
             <option value="Pants">Pants</option>
           </select>
         </div>
@@ -208,6 +213,21 @@ const Add = ({ token }) => {
             className={inputStyle}
             type="number"
             placeholder="800"
+            required
+          />
+        </div>
+
+        {/* خانة إدخال المخزون الجديدة */}
+        <div>
+          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+            Stock Quantity
+          </label>
+          <input
+            onChange={(e) => setStock(e.target.value)}
+            value={stock}
+            className={inputStyle}
+            type="number"
+            placeholder="e.g., 50"
             required
           />
         </div>

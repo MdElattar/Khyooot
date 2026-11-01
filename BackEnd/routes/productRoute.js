@@ -4,6 +4,7 @@ import {
   removeProduct,
   listProducts,
   singleProduct,
+  updateProduct,
 } from "../controller/productController.js";
 import upload from "../middleware/multer.js";
 import adminAuth from "../middleware/adminAuth.js";
@@ -25,5 +26,6 @@ productRouter.post(
 productRouter.post("/remove",adminAuth,removeProduct);
 productRouter.post("/single", singleProduct);
 productRouter.get("/list", listProducts);
+productRouter.post('/update' , updateProduct);
 
 export default productRouter;
