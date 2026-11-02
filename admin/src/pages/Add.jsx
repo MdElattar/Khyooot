@@ -14,11 +14,15 @@ const Add = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [stock, setStock] = useState(""); // تعريف الـ state الخاصة بالمخزون
   const [category, setCategory] = useState("Men");
-  const [subCategory, setSubCategory] = useState("Hoddies");
+  const [subCategory, setSubCategory] = useState("Hoodies");
   const [bestseller, setBestSeller] = useState(false);
+  
+  const availableSizes = ["XS", "S", "M", "L", "XL"];
   const [sizes, setSizes] = useState([]);
+  const [sizesStock, setSizesStock] = useState({});
+
+  const availableColors = ["Black", "White", "Baby Blue", "Burghandy", "Pink", "Grey", "Navy", "Beige"];
   const [colors, setColors] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -31,11 +35,23 @@ const Add = ({ token }) => {
   };
 
   const toggleSize = (size) => {
-    setSizes((prev) =>
-      prev.includes(size)
-        ? prev.filter((item) => item !== size)
-        : [...prev, size]
-    );
+    setSizes((prev) => {
+      if (prev.includes(size)) {
+        const updatedStock = { ...sizesStock };
+        delete updatedStock[size];
+        setSizesStock(updatedStock);
+        return prev.filter((item) => item !== size);
+      } else {
+        return [...prev, size];
+      }
+    });
+  };
+
+  const handleSizeStockChange = (size, value) => {
+    setSizesStock((prev) => ({
+      ...prev,
+      [size]: value === "" ? "" : Number(value)
+    }));
   };
 
   const onSubmitHandler = async (e) => {
@@ -44,16 +60,15 @@ const Add = ({ token }) => {
 
     try {
       const formData = new FormData();
-
       formData.append("name", name);
       formData.append("description", description);
       formData.append("price", price);
-      formData.append("stock", stock); // إرسال المخزون مع الـ FormData
       formData.append("category", category);
       formData.append("subCategory", subCategory);
       formData.append("bestseller", bestseller);
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("colors", JSON.stringify(colors));
+      formData.append("sizesStock", JSON.stringify(sizesStock));
 
       image1 && formData.append("image1", image1);
       image2 && formData.append("image2", image2);
@@ -75,9 +90,9 @@ const Add = ({ token }) => {
         setImage3(false);
         setImage4(false);
         setPrice("");
-        setStock(""); // تصفير خانة المخزون
         setSizes([]);
         setColors([]);
+        setSizesStock({});
       } else {
         toast.error(response.data.message || "Complete The Empty Inputs");
       }
@@ -89,29 +104,29 @@ const Add = ({ token }) => {
     }
   };
 
-  const inputStyle = "w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm transition-all outline-none focus:border-gray-900 focus:bg-white shadow-sm";
+  const inputStyle = "w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm transition-all outline-none focus:border-gray-900 focus:bg-white shadow-xs";
 
   return (
     <form
       onSubmit={onSubmitHandler}
-      className="flex flex-col w-full items-start gap-8 max-w-4xl mx-auto pt-28 pb-20 px-4 sm:px-8 bg-white"
+      className="flex flex-col w-full items-start gap-8 max-w-5xl mx-auto pt-28 pb-20 px-6 sm:px-10 bg-white min-h-screen"
     >
-      {/* Section Header */}
-      <div className="border-b border-gray-100 w-full pb-4">
-        <h2 className="text-xl font-black text-gray-950 uppercase tracking-wider">
-          Add New Product
+      {/* Page Header */}
+      <div className="border-b border-gray-100 w-full pb-5">
+        <h2 className="text-2xl font-black text-gray-950 uppercase tracking-tight">
+          Add New Product Inventory
         </h2>
-        <p className="text-xs text-gray-400 font-medium tracking-widest uppercase mt-0.5">
-          Upload product assets and luxury specifications
+        <p className="text-xs text-gray-400 font-semibold tracking-widest uppercase mt-1">
+          Configure size quantities, colorways, and high-end luxury assets
         </p>
       </div>
 
-      {/* Upload Images */}
+      {/* Upload Images Section */}
       <div className="w-full">
-        <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-          Upload Product Images (Max 4)
+        <p className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">
+          Upload Product Assets (Max 4 Images)
         </p>
-        <div className="flex flex-wrap gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {[image1, image2, image3, image4].map((img, index) => {
             const id = `image${index + 1}`;
             const setImage = [setImage1, setImage2, setImage3, setImage4][index];
@@ -119,13 +134,16 @@ const Add = ({ token }) => {
               <label
                 key={id}
                 htmlFor={id}
-                className="w-24 h-28 border-2 border-dashed border-gray-200 hover:border-gray-900 rounded-2xl overflow-hidden cursor-pointer flex items-center justify-center bg-gray-50 transition-all duration-300 shadow-xs"
+                className="w-full aspect-[3/4] border-2 border-dashed border-gray-200 hover:border-gray-900 rounded-2xl overflow-hidden cursor-pointer flex flex-col items-center justify-center bg-gray-50 transition-all duration-300 shadow-xs group"
               >
-                <img
-                  className="w-full h-full object-cover"
-                  src={!img ? assets.upload_area : URL.createObjectURL(img)}
-                  alt="Upload preview"
-                />
+                {img ? (
+                  <img className="w-full h-full object-cover" src={URL.createObjectURL(img)} alt="Upload preview" />
+                ) : (
+                  <div className="flex flex-col items-center gap-2">
+                    <img className="w-8 h-8 opacity-40 group-hover:opacity-80 transition-opacity" src={assets.upload_area} alt="Upload" />
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400 group-hover:text-gray-900">Upload</span>
+                  </div>
+                )}
                 <input
                   onChange={(e) => setImage(e.target.files[0])}
                   type="file"
@@ -141,7 +159,7 @@ const Add = ({ token }) => {
 
       {/* Product Name */}
       <div className="w-full">
-        <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+        <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
           Product Name
         </label>
         <input
@@ -149,30 +167,30 @@ const Add = ({ token }) => {
           value={name}
           className={inputStyle}
           type="text"
-          placeholder="e.g., Luxury Oversized Hoodie"
+          placeholder="e.g., Khyoot Arabian Weave Hoodie"
           required
         />
       </div>
 
       {/* Product Description */}
       <div className="w-full">
-        <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-          Product Description
+        <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
+          Product Description & Story
         </label>
         <textarea
           onChange={(e) => setDescription(e.target.value)}
           value={description}
-          className={`${inputStyle} h-32 resize-none`}
-          placeholder="Write detailed product features and materials here..."
+          className={`${inputStyle} h-36 resize-none`}
+          placeholder="Write detailed product features, materials, and luxury specifications here..."
           required
         />
       </div>
 
-      {/* Category, Sub Category, Price & Stock */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+      {/* Category, Sub Category & Price */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full">
         <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-            Product Category
+          <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
+            Category
           </label>
           <select
             onChange={(e) => setCategory(e.target.value)}
@@ -185,8 +203,8 @@ const Add = ({ token }) => {
           </select>
         </div>
 
-       <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+        <div>
+          <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
             Sub Category
           </label>
           <select
@@ -204,70 +222,77 @@ const Add = ({ token }) => {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-            Product Price (L.E)
+          <label className="block text-xs font-bold text-gray-800 uppercase tracking-wider mb-2">
+            Price (L.E)
           </label>
           <input
             onChange={(e) => setPrice(e.target.value)}
             value={price}
             className={inputStyle}
             type="number"
-            placeholder="800"
-            required
-          />
-        </div>
-
-        {/* خانة إدخال المخزون الجديدة */}
-        <div>
-          <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
-            Stock Quantity
-          </label>
-          <input
-            onChange={(e) => setStock(e.target.value)}
-            value={stock}
-            className={inputStyle}
-            type="number"
-            placeholder="e.g., 50"
+            placeholder="900"
             required
           />
         </div>
       </div>
 
-      {/* Product Sizes */}
-      <div className="w-full">
-        <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-          Product Sizes
+      {/* Product Sizes (XS to XL) & Quantities */}
+      <div className="w-full bg-gray-50/60 p-6 rounded-3xl border border-gray-100">
+        <p className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-3">
+          Select Available Sizes (XS to XL) & Quantities
         </p>
-        <div className="flex gap-3">
-          {["XS", "S", "M", "L"].map((size) => (
+        <div className="flex flex-wrap gap-3">
+          {availableSizes.map((size) => (
             <div
               key={size}
               onClick={() => toggleSize(size)}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider cursor-pointer border transition-all duration-300 ${
+              className={`h-12 px-6 rounded-2xl text-xs font-bold tracking-wider cursor-pointer border flex items-center justify-center transition-all duration-300 ${
                 sizes.includes(size)
-                  ? "bg-gray-950 text-white border-gray-950 shadow-md"
-                  : "bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-400"
+                  ? "bg-black text-white border-black shadow-md scale-105"
+                  : "bg-white text-gray-700 border-gray-200 hover:border-gray-400"
               }`}
             >
               {size}
             </div>
           ))}
         </div>
+
+        {/* Quantities Inputs */}
+        {sizes.length > 0 && (
+          <div className="mt-6 pt-6 border-t border-gray-200/60 grid grid-cols-2 sm:grid-cols-5 gap-4">
+            {sizes.map((size) => (
+              <div key={size} className="bg-white p-3 rounded-2xl border border-gray-200">
+                <label className="block text-[10px] font-bold text-gray-500 uppercase mb-1">
+                  Stock for {size}
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={sizesStock[size] ?? ""}
+                  onChange={(e) => handleSizeStockChange(size, e.target.value)}
+                  className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-black"
+                  required
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Product Colors */}
       <div className="w-full">
-        <p className="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">
-          Product Colors
+        <p className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-3">
+          Product Colorways
         </p>
         <div className="flex flex-wrap gap-3">
-          {["Black", "White", "Baby Blue", "Burghandy", "Pink"].map((color) => (
+          {availableColors.map((color) => (
             <div
               key={color}
               onClick={() => toggleColor(color)}
-              className={`px-5 py-2.5 rounded-xl text-xs font-bold tracking-wider cursor-pointer border transition-all duration-300 ${
+              className={`h-11 px-5 rounded-2xl text-xs font-bold tracking-wider cursor-pointer border flex items-center justify-center transition-all duration-300 ${
                 colors.includes(color)
-                  ? "bg-gray-950 text-white border-gray-950 shadow-md"
+                  ? "bg-black text-white border-black shadow-md"
                   : "bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-400"
               }`}
             >
@@ -278,16 +303,16 @@ const Add = ({ token }) => {
       </div>
 
       {/* Winter Collection Checkbox */}
-      <div className="flex items-center gap-3 pt-2">
+      <div className="flex items-center gap-3 pt-2 bg-gray-50 w-full p-4 rounded-2xl border border-gray-100">
         <input
           type="checkbox"
           id="bestseller"
           checked={bestseller}
           onChange={() => setBestSeller((prev) => !prev)}
-          className="w-5 h-5 accent-gray-950 cursor-pointer rounded-md"
+          className="w-5 h-5 accent-black cursor-pointer rounded-md"
         />
-        <label className="cursor-pointer text-xs font-bold text-gray-800 uppercase tracking-wider" htmlFor="bestseller">
-          Add to Winter Collection (Bestseller / Featured)
+        <label className="cursor-pointer text-xs font-bold text-gray-900 uppercase tracking-wider" htmlFor="bestseller">
+          Feature in Winter Collection / Bestseller Showcase
         </label>
       </div>
 
@@ -295,20 +320,22 @@ const Add = ({ token }) => {
       <button
         type="submit"
         disabled={loading}
-        className={`w-full sm:w-48 py-4 rounded-2xl font-bold uppercase tracking-wider text-xs transition-all duration-300 shadow-xl flex items-center justify-center gap-2 mt-4 ${
+        className={`w-full sm:w-56 py-4 rounded-2xl font-bold uppercase tracking-wider text-xs transition-all duration-300 shadow-xl flex items-center justify-center gap-2 mt-4 ${
           loading
             ? "bg-gray-400 text-white cursor-not-allowed"
-            : "bg-gray-950 text-white hover:bg-black shadow-black/15 hover:scale-[1.01]"
+            : "bg-black text-white hover:bg-neutral-800 shadow-black/20 hover:scale-[1.01]"
         }`}
       >
         {loading ? (
           <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
         ) : (
-          "Add Product"
+          "Publish Product"
         )}
       </button>
     </form>
   );
 };
+
+Add.displayName = "Add";
 
 export default Add;

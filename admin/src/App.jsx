@@ -23,7 +23,7 @@ const App = () => {
   }, [token]);
 
   return (
-    <div className="bg-gray-50 min-h-screen">
+    <div className="bg-gray-50 min-h-screen flex flex-col">
       {/* Toast Container الفاخر */}
       <ToastContainer
         position="top-center"
@@ -44,11 +44,11 @@ const App = () => {
       {!token ? (
         <Login setToken={setToken} />
       ) : (
-        <>
+        <div className="flex flex-col min-h-screen">
           <Navbar setToken={setToken} />
-          <div className="flex">
+          <div className="flex flex-1 w-full">
             <Sidebar />
-            <div className="flex-1 p-6">
+            <div className="flex-1 min-h-[calc(100vh-70px)] overflow-y-auto bg-white">
               <Routes>
                 <Route path="/" element={<Navigate to="/add" />} />
                 <Route path="/add" element={<Add token={token} />} />
@@ -58,7 +58,7 @@ const App = () => {
               </Routes>
             </div>
           </div>
-        </>
+        </div>
       )}
     </div>
   );

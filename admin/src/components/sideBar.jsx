@@ -24,7 +24,7 @@ const SideBar = () => {
             <>
               <img
                 src={assets.add_icon}
-                className={`w-5 h-5 mx-auto md:mx-0 transition group-hover:scale-110 ${
+                className={`w-3 h-3 mx-auto md:mx-0 transition group-hover:scale-110 ${
                   isActive ? "filter invert" : ""
                 }`}
                 alt=""

@@ -3,7 +3,6 @@ import axios from "axios";
 import { currency } from "../App";
 import { toast } from "react-toastify";
 
-// تم تثبيت الرابط المحلي صراحة للتجربة والتطوير الفوري بدون مشاكل الـ Cache
 const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
 const List = ({ token }) => {
@@ -15,11 +14,15 @@ const List = ({ token }) => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
-  const [stock, setStock] = useState("");
   const [category, setCategory] = useState("Men");
   const [subCategory, setSubCategory] = useState("Hoodies");
   const [bestseller, setBestSeller] = useState(false);
+  
+  const availableSizes = ["XS", "S", "M", "L", "XL"];
   const [sizes, setSizes] = useState([]);
+  const [sizesStock, setSizesStock] = useState({});
+
+  const availableColors = ["Black", "White", "Baby Blue", "Burghandy", "Pink", "Grey", "Navy", "Beige"];
   const [colors, setColors] = useState([]);
   const [updating, setUpdating] = useState(false);
 
@@ -66,18 +69,32 @@ const List = ({ token }) => {
     setName(item.name);
     setDescription(item.description);
     setPrice(item.price);
-    setStock(item.stock || 0);
     setCategory(item.category);
     setSubCategory(item.subCategory);
     setBestSeller(item.bestseller || false);
     setSizes(item.sizes || []);
     setColors(item.colors || []);
+    setSizesStock(item.sizesStock || {});
   };
 
   const toggleSize = (size) => {
-    setSizes((prev) =>
-      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
-    );
+    setSizes((prev) => {
+      if (prev.includes(size)) {
+        const updatedStock = { ...sizesStock };
+        delete updatedStock[size];
+        setSizesStock(updatedStock);
+        return prev.filter((s) => s !== size);
+      } else {
+        return [...prev, size];
+      }
+    });
+  };
+
+  const handleSizeStockChange = (size, value) => {
+    setSizesStock((prev) => ({
+      ...prev,
+      [size]: value === "" ? "" : Number(value)
+    }));
   };
 
   const toggleColor = (color) => {
@@ -97,12 +114,12 @@ const List = ({ token }) => {
           name,
           description,
           price,
-          stock,
           category,
           subCategory,
           bestseller,
           sizes,
           colors,
+          sizesStock,
         },
         { headers: { token } }
       );
@@ -134,10 +151,10 @@ const List = ({ token }) => {
       {/* Page Title */}
       <div className="border-b border-gray-100 w-full pb-4 mb-8">
         <h2 className="text-xl font-black text-gray-950 uppercase tracking-wider">
-          All Products Inventory
+          All Products Inventory & Sizes
         </h2>
         <p className="text-xs text-gray-400 font-medium tracking-widest uppercase mt-0.5">
-          Manage, view, edit, and remove store items
+          Manage, view, edit size quantities, and remove store items
         </p>
       </div>
 
@@ -152,19 +169,19 @@ const List = ({ token }) => {
       ) : (
         <div className="flex flex-col gap-3">
           {/* List Table Header */}
-          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1fr_1.5fr] items-center py-3 px-6 bg-gray-50 rounded-2xl text-xs font-bold text-gray-700 uppercase tracking-wider border border-gray-100">
+          <div className="hidden md:grid grid-cols-[1fr_3fr_1fr_1fr_1.5fr_1.5fr] items-center py-3 px-6 bg-gray-50 rounded-2xl text-xs font-bold text-gray-700 uppercase tracking-wider border border-gray-100">
             <span>Image</span>
             <span>Product Name</span>
             <span>Category</span>
             <span>Price</span>
-            <span>Stock</span>
+            <span>Sizes & Stock</span>
             <span className="text-center">Actions</span>
           </div>
 
           {/* Product List Cards */}
           {list.map((item, index) => (
             <div
-              className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1fr_1.5fr] items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-all duration-300"
+              className="grid grid-cols-[1fr_2fr_1fr] md:grid-cols-[1fr_3fr_1fr_1fr_1.5fr_1.5fr] items-center gap-4 p-4 bg-white rounded-2xl border border-gray-100 shadow-xs hover:shadow-md transition-all duration-300"
               key={index}
             >
               <div className="w-14 h-16 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0">
@@ -175,9 +192,14 @@ const List = ({ token }) => {
                 />
               </div>
 
-              <p className="font-serif font-medium text-gray-900 text-sm sm:text-base">
-                {item.name}
-              </p>
+              <div>
+                <p className="font-serif font-medium text-gray-900 text-sm sm:text-base">
+                  {item.name}
+                </p>
+                <p className="text-[11px] text-gray-400 font-sans mt-0.5">
+                  Total Stock: <span className="font-bold text-gray-700">{item.stock || 0}</span>
+                </p>
+              </div>
 
               <p className="text-xs font-semibold uppercase tracking-wider text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg w-fit border border-gray-100">
                 {item.category}
@@ -187,9 +209,26 @@ const List = ({ token }) => {
                 {currency} {item.price}
               </p>
 
-              <p className={`text-xs font-bold ${item.stock > 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                {item.stock > 0 ? `${item.stock} in stock` : "Sold Out"}
-              </p>
+              {/* عرض المقاسات وحالتها (لو خلصان يظهر رمادي Out of stock) */}
+              <div className="flex flex-wrap gap-1.5">
+                {item.sizes && item.sizes.map((sz) => {
+                  const qty = item.sizesStock?.[sz] ?? 0;
+                  const isOut = qty <= 0;
+                  return (
+                    <span
+                      key={sz}
+                      className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                        isOut
+                          ? "bg-gray-100 text-gray-400 border-gray-200 line-through"
+                          : "bg-emerald-50 text-emerald-800 border-emerald-200"
+                      }`}
+                      title={isOut ? "Out of stock" : `${qty} available`}
+                    >
+                      {sz}: {isOut ? "Out" : qty}
+                    </span>
+                  );
+                })}
+              </div>
 
               {/* Action Buttons: Edit & Remove */}
               <div className="flex items-center justify-end md:justify-center gap-2">
@@ -220,7 +259,7 @@ const List = ({ token }) => {
           <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-gray-100">
             <div className="flex justify-between items-center pb-4 mb-6 border-b border-gray-100">
               <h3 className="text-lg font-black text-gray-950 uppercase tracking-wider">
-                Edit Product Details
+                Edit Product & Sizes Stock
               </h3>
               <button
                 onClick={() => setEditProduct(null)}
@@ -256,7 +295,7 @@ const List = ({ token }) => {
                 />
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
                     Category
@@ -302,28 +341,15 @@ const List = ({ token }) => {
                     required
                   />
                 </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-700 uppercase mb-1">
-                    Stock
-                  </label>
-                  <input
-                    type="number"
-                    value={stock}
-                    onChange={(e) => setStock(e.target.value)}
-                    className={inputStyle}
-                    required
-                  />
-                </div>
               </div>
 
-              {/* Sizes */}
+              {/* Sizes & Quantities */}
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase mb-2">
-                  Sizes
+                  Sizes (XS to XL) & Stock Quantities
                 </label>
-                <div className="flex gap-2">
-                  {["XS", "S", "M", "L"].map((sz) => (
+                <div className="flex gap-2 flex-wrap">
+                  {availableSizes.map((sz) => (
                     <div
                       key={sz}
                       onClick={() => toggleSize(sz)}
@@ -337,6 +363,26 @@ const List = ({ token }) => {
                     </div>
                   ))}
                 </div>
+
+                {sizes.length > 0 && (
+                  <div className="mt-4 p-4 bg-gray-50 rounded-2xl border border-gray-100 grid grid-cols-2 sm:grid-cols-5 gap-3">
+                    {sizes.map((sz) => (
+                      <div key={sz}>
+                        <label className="block text-[10px] font-bold text-gray-600 uppercase mb-1">
+                          Qty for {sz}
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={sizesStock[sz] ?? ""}
+                          onChange={(e) => handleSizeStockChange(sz, e.target.value)}
+                          className="w-full px-3 py-2 bg-white border border-gray-200 rounded-xl text-xs font-bold outline-none focus:border-gray-900"
+                          required
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Colors */}
@@ -345,7 +391,7 @@ const List = ({ token }) => {
                   Colors
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {["Black", "White", "Baby Blue", "Burghandy", "Pink"].map((col) => (
+                  {availableColors.map((col) => (
                     <div
                       key={col}
                       onClick={() => toggleColor(col)}

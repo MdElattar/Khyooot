@@ -20,8 +20,11 @@ const Product = () => {
       if (item._id === productId) {
         setProductData(item);
         setImage(item.image[0]);
-        // تعيين قيم افتراضية أولية لو متاحة
-        if (item.sizes && item.sizes.length > 0) setCurrentSize(item.sizes[0]);
+        // تعيين أول مقاس متاح وكميته أكبر من صفر كافتراضي
+        if (item.sizes && item.sizes.length > 0) {
+          const firstAvailable = item.sizes.find(sz => (item.sizesStock?.[sz] ?? 1) > 0);
+          setCurrentSize(firstAvailable || item.sizes[0]);
+        }
         if (item.colors && item.colors.length > 0) setCurrentColor(item.colors[0]);
         return null;
       }
@@ -29,8 +32,9 @@ const Product = () => {
   };
 
   const handleAddToCart = () => {
-    if (productData.stock <= 0) {
-      toast.error("This product is out of stock");
+    const stockForSize = productData.sizesStock?.[currentSize] ?? productData.stock;
+    if (stockForSize <= 0) {
+      toast.error(`Selected size (${currentSize}) is out of stock`);
       return;
     }
     if (!currentSize && productData?.sizes?.length > 0) {
@@ -62,15 +66,15 @@ const Product = () => {
       {/* Main Product Section */}
       <div className="flex gap-12 lg:gap-16 flex-col lg:flex-row">
         
-        {/* Product Images (Gallery) */}
+   {/* Product Images (Gallery) */}
         <div className="flex-1 flex flex-col-reverse lg:flex-row gap-4">
-          {/* Thumbnails */}
-          <div className="flex lg:flex-col overflow-x-auto lg:overflow-y-scroll justify-between lg:justify-start gap-3 lg:w-[20%] w-full scrollbar-none">
+          {/* Thumbnails - أفقي متناسق على الموبايل واللابتوب */}
+          <div className="flex flex-row lg:flex-col overflow-x-auto lg:overflow-y-scroll justify-start gap-3 lg:w-[20%] w-full scrollbar-none pb-2 lg:pb-0">
             {productData.image.map((item, index) => (
               <div 
                 key={index} 
                 onClick={() => setImage(item)}
-                className={`cursor-pointer border transition-all duration-300 rounded-lg overflow-hidden flex-shrink-0 w-[22%] lg:w-full aspect-[3/4] ${image === item ? 'border-black ring-1 ring-black' : 'border-gray-200 opacity-70 hover:opacity-100'}`}
+                className={`cursor-pointer border transition-all duration-300 rounded-xl overflow-hidden flex-shrink-0 w-20 lg:w-full aspect-[3/4] ${image === item ? 'border-black ring-2 ring-black' : 'border-gray-200 opacity-60 hover:opacity-100'}`}
               >
                 <img src={item} className="w-full h-full object-cover" alt="" />
               </div>
@@ -112,11 +116,11 @@ const Product = () => {
               {currency}{productData.price}
             </div>
             
-            {/* عرض حالة المخزون بذكاء */}
+            {/* عرض حالة المخزون الإجمالي بذكاء */}
             <div className="text-xs font-semibold tracking-wider uppercase">
               {productData.stock > 0 ? (
                 <span className="text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
-                  In Stock ({productData.stock} available)
+                  In Stock ({productData.stock} total)
                 </span>
               ) : (
                 <span className="text-rose-600 bg-rose-50 px-3 py-1.5 rounded-full border border-rose-200">
@@ -132,46 +136,64 @@ const Product = () => {
 
           <div className="h-[1px] bg-gray-100 my-8" />
 
-          {/* Size Selection */}
+          {/* Size Selection with Stock Integration */}
           {productData?.sizes && productData.sizes.length > 0 && (
             <div className="flex flex-col gap-3 mb-6">
               <div className="flex justify-between items-center text-xs uppercase tracking-wider font-medium text-gray-700">
-                <span>Select Size</span>
+                <span>Select Size (Stock Status)</span>
                 <span className="text-gray-400 underline cursor-pointer hover:text-black transition-colors">Size Guide</span>
               </div>
               <div className="flex flex-wrap gap-3">
-                {productData.sizes.map((item, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSize(item)}
-                    className={`h-11 min-w-[48px] px-4 text-xs font-medium tracking-widest transition-all rounded-lg border ${
-                      item === currentSize 
-                        ? "border-black bg-black text-white shadow-md shadow-black/10" 
-                        : "border-gray-200 bg-white text-gray-800 hover:border-gray-400"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
+                {productData.sizes.map((item, index) => {
+                  const sizeStockQty = productData.sizesStock?.[item] ?? 1;
+                  const isSizeOut = sizeStockQty <= 0;
+
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        if (isSizeOut) {
+                          toast.error(`Size ${item} is out of stock`);
+                          return;
+                        }
+                        setCurrentSize(item);
+                      }}
+                      disabled={isSizeOut}
+                      className={`h-14 min-w-[72px] px-4 text-xs font-medium tracking-widest transition-all rounded-xl border flex flex-col items-center justify-center gap-1 ${
+                        isSizeOut
+                          ? "bg-gray-100 text-gray-400 border-gray-200 line-through cursor-not-allowed opacity-60"
+                          : item === currentSize 
+                            ? "border-black bg-black text-white shadow-md shadow-black/10 scale-105" 
+                            : "border-gray-200 bg-white text-gray-800 hover:border-gray-400"
+                      }`}
+                      title={isSizeOut ? "Out of Stock" : `${sizeStockQty} available`}
+                    >
+                      <span className="font-bold">{item}</span>
+                      <span className="text-[10px] opacity-75">
+                        {isSizeOut ? "Sold" : `${sizeStockQty} left`}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           )}
 
-          {/* Color Selection */}
+        {/* Color Selection - Wide & Bold */}
           {productData?.colors && productData.colors.length > 0 && (
             <div className="flex flex-col gap-3 mb-8">
-              <span className="text-xs uppercase tracking-wider font-medium text-gray-700">
+              <span className="text-xs uppercase tracking-wider font-bold text-gray-800">
                 Color: <span className="font-normal text-gray-500">{currentColor}</span>
               </span>
-              <div className="flex gap-3">
+              <div className="flex gap-3 flex-wrap">
                 {productData.colors.map((color, index) => (
                   <button
                     key={index}
                     onClick={() => setCurrentColor(color)}
-                    className={`h-9 px-5 text-xs tracking-wider rounded-lg border transition-all ${
+                    className={`h-12 px-6 text-xs tracking-wider rounded-xl border transition-all font-bold ${
                       currentColor === color 
-                        ? "border-black font-semibold bg-gray-50 ring-1 ring-black" 
-                        : "border-gray-200 text-gray-600 hover:border-gray-300"
+                        ? "border-black bg-black text-white shadow-md scale-105" 
+                        : "border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-400"
                     }`}
                   >
                     {color}
@@ -181,33 +203,34 @@ const Product = () => {
             </div>
           )}
 
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 mt-2">
+          {/* Action Buttons - Extra Large & Prominent */}
+          <div className="flex flex-col gap-4 mt-4 w-full">
             <button
               onClick={handleAddToCart}
               disabled={productData.stock <= 0}
-              className={`flex-1 h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 ${
+              className={`w-full h-16 px-8 text-sm font-bold tracking-widest uppercase rounded-2xl transition-all shadow-xl flex items-center justify-center gap-2 ${
                 productData.stock > 0 
-                  ? "bg-black text-white hover:bg-neutral-800 active:scale-[0.99] shadow-black/10 cursor-pointer" 
-                  : "bg-gray-300 text-gray-500 cursor-not-allowed shadow-none"
+                  ? "bg-black text-white hover:bg-neutral-800 active:scale-[0.99] shadow-black/20 cursor-pointer" 
+                  : "bg-gray-200 text-gray-400 cursor-not-allowed shadow-none"
               }`}
             >
               {productData.stock > 0 ? "Add to Cart" : "Out of Stock"}
             </button>
             <button
               onClick={() => {
-                if (productData.stock > 0) {
+                const stockForSize = productData.sizesStock?.[currentSize] ?? productData.stock;
+                if (stockForSize > 0) {
                   handleAddToCart();
                   navigate('/cart');
                 } else {
-                  toast.error("This product is out of stock");
+                  toast.error(`Selected size (${currentSize}) is out of stock`);
                 }
               }}
               disabled={productData.stock <= 0}
-              className={`flex-1 h-14 px-8 text-xs font-semibold tracking-widest uppercase rounded-xl transition-all flex items-center justify-center gap-2 ${
+              className={`w-full h-16 px-8 text-sm font-bold tracking-widest uppercase rounded-2xl transition-all flex items-center justify-center gap-2 ${
                 productData.stock > 0
-                  ? "border border-black text-black hover:bg-black hover:text-white cursor-pointer"
-                  : "border border-gray-200 text-gray-400 cursor-not-allowed"
+                  ? "border-2 border-black text-black bg-white hover:bg-black hover:text-white cursor-pointer shadow-sm"
+                  : "border border-gray-200 text-gray-300 cursor-not-allowed"
               }`}
             >
               Buy It Now
@@ -236,7 +259,7 @@ const Product = () => {
             onClick={() => setActiveTab("description")}
             className={`pb-4 text-sm tracking-wider uppercase transition-all relative ${activeTab === 'description' ? 'font-semibold text-black after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black' : 'text-gray-400 hover:text-gray-600'}`}
           >
-            Description
+            Description & Details
           </button>
           <button 
             onClick={() => setActiveTab("reviews")}
@@ -249,16 +272,30 @@ const Product = () => {
         <div className="py-8 text-sm text-gray-600 leading-relaxed font-light">
           {activeTab === 'description' ? (
             <div className="flex flex-col gap-6 max-w-4xl">
-              <p>
-                Crafted with precision from premium weighted fabrics, this piece from KHYOOT embodies modern sophistication and effortless luxury. Designed with a tailored silhouette that offers both structure and fluid movement, it transitions seamlessly from daytime refinement to evening elegance.
+              <p className="text-base font-serif text-gray-900 italic">
+                "Designed for those who appreciate uncompromising detail, the <span className="font-semibold">{productData.name}</span> redefines modern luxury streetwear through immaculate silhouette and weighted comfort."
               </p>
               <p>
-                Every detail, from the reinforced stitching to the custom hardware elements, undergoes rigorous quality checks to ensure longevity and absolute comfort against the skin. Elevate your everyday wardrobe with investment pieces built on uncompromising standards.
+                Part of our exclusive <span className="uppercase font-semibold tracking-wider">{productData.category}</span> lineup, this piece merges avant-garde tailoring with everyday wearability. Every thread is meticulously woven to provide breathable durability, ensuring it remains a cornerstone of your wardrobe season after season.
               </p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-gray-100 text-xs">
+                <div>
+                  <span className="font-bold uppercase text-black block mb-1">Fabric & Craft</span>
+                  <span className="text-gray-500">100% Premium Heavyweight Cotton, pre-shrunk for an enduring fit.</span>
+                </div>
+                <div>
+                  <span className="font-bold uppercase text-black block mb-1">Signature Fit</span>
+                  <span className="text-gray-500">Oversized luxury drop-shoulder cut tailored for structured drape.</span>
+                </div>
+                <div>
+                  <span className="font-bold uppercase text-black block mb-1">Care Protocol</span>
+                  <span className="text-gray-500">Machine wash cold inside out; line dry recommended.</span>
+                </div>
+              </div>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
-              <div className="p-6 bg-gray-50 rounded-xl">
+              <div className="p-6 bg-gray-50 rounded-xl border border-gray-100">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-medium text-black">Sarah M.</span>
                   <span className="text-xs text-gray-400">October 24, 2026</span>
@@ -280,6 +317,7 @@ const Product = () => {
         <RelatedProducts
           category={productData.category}
           subCategory={productData.subCategory}
+          currentProductId={productData._id}
         />
       </div>
 

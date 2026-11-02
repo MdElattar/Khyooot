@@ -12,7 +12,7 @@ const addProduct = async (req, res) => {
       subCategory,
       sizes,
       colors,
-      stock, // استلام حقل المخزون
+      sizesStock, // استقبال مخزون المقاسات
       bestseller,
     } = req.body;
     
@@ -34,13 +34,19 @@ const addProduct = async (req, res) => {
       })
     );
 
+    const parsedSizesStock = sizesStock ? JSON.parse(sizesStock) : {};
+    
+    // حساب الإجمالي التلقائي للمخزون
+    const totalStock = Object.values(parsedSizesStock).reduce((acc, val) => acc + Number(val || 0), 0);
+
     const productData = {
       name,
       description,
       category,
       price: Number(price),
       subCategory,
-      stock: Number(stock) || 0, // حفظ المخزون كـ Number
+      stock: totalStock,
+      sizesStock: parsedSizesStock,
       bestseller: bestseller === "true" ? true : false,
       sizes: sizes ? JSON.parse(sizes) : [],
       colors: colors ? JSON.parse(colors) : [],
@@ -85,7 +91,7 @@ const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
     const product = await productModel.findById(productId);
-    res.json({ success: true, product }); // تم تصحيح success إلى true وإرسال المنتج
+    res.json({ success: true, product });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -95,7 +101,10 @@ const singleProduct = async (req, res) => {
 // Function for updating product details
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, price, category, subCategory, sizes, colors, stock, bestseller } = req.body;
+    const { id, name, description, price, category, subCategory, sizes, colors, sizesStock, bestseller } = req.body;
+
+    const parsedSizesStock = typeof sizesStock === "string" ? JSON.parse(sizesStock) : (sizesStock || {});
+    const totalStock = Object.values(parsedSizesStock).reduce((acc, val) => acc + Number(val || 0), 0);
 
     const updateData = {
       name,
@@ -103,7 +112,8 @@ const updateProduct = async (req, res) => {
       price: Number(price),
       category,
       subCategory,
-      stock: Number(stock),
+      stock: totalStock,
+      sizesStock: parsedSizesStock,
       bestseller: bestseller === "true" || bestseller === true,
       sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes,
       colors: typeof colors === "string" ? JSON.parse(colors) : colors,
@@ -118,4 +128,3 @@ const updateProduct = async (req, res) => {
 };
 
 export { addProduct, listProducts, removeProduct, singleProduct, updateProduct };
-
