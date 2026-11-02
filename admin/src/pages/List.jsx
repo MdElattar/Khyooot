@@ -4,8 +4,8 @@ import { currency } from "../App";
 import { toast } from "react-toastify";
 
 // تم تثبيت الرابط المحلي صراحة للتجربة والتطوير الفوري بدون مشاكل الـ Cache
-// استبدل السطر الثابت بالسطر الذكي ده:
-const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://api.khyoot.com";
+const backendUrl = "http://localhost:4000";
+
 const List = ({ token }) => {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
