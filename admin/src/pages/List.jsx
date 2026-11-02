@@ -4,7 +4,7 @@ import { currency } from "../App";
 import { toast } from "react-toastify";
 
 // تم تثبيت الرابط المحلي صراحة للتجربة والتطوير الفوري بدون مشاكل الـ Cache
-const backendUrl = "http://localhost:4000";
+const backendUrl = import.meta.env.VITE_BACKEND_URL || "";
 
 const List = ({ token }) => {
   const [list, setList] = useState([]);
