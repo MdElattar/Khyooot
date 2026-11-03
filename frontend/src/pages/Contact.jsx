@@ -80,7 +80,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Email Us</p>
-                  <p className="text-sm font-semibold text-gray-900 mt-0.5">support@khyoot.com</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-0.5">Khyoot.support@gmail.com</p>
                 </div>
               </div>
 
@@ -91,7 +91,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Call Us</p>
-                  <p className="text-sm font-semibold text-gray-900 mt-0.5">+20 100 123 4567</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-0.5">+20 109 962 2861</p>
                 </div>
               </div>
 
@@ -102,7 +102,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">Location</p>
-                  <p className="text-sm font-semibold text-gray-900 mt-0.5">Mansoura, Dakahlia, Egypt</p>
+                  <p className="text-sm font-semibold text-gray-900 mt-0.5">Egypt</p>
                 </div>
               </div>
             </div>
