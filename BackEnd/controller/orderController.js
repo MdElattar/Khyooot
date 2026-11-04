@@ -5,28 +5,26 @@ import userModel from "../models/userModel.js";
 // Place order
 const PlaceOrder = async (req, res) => {
   try {
-    const { userId, items, amount, address, paymentMethod } = req.body; // <-- ضفنا paymentMethod هنا
+    const { userId, items, amount, address, paymentMethod } = req.body;
 
     const orderData = {
       userId,
       items,
       address,
       amount,
-      paymentMethod: paymentMethod || "COD", // <-- بنستقبلها من الفرونت إند، ولو مش موجودة يحط COD كاحتياط
+      paymentMethod: paymentMethod || "COD",
       payment: false,
       date: Date.now(),
+      statusHistory: [{ status: "Order Placed", date: Date.now() }]
     };
 
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
-    // FIX: Delete the actual cart document from the separate collection
     await cartModel.findOneAndDelete({ userId });
-
-    // Clear the userModel reference as well for redundancy
     await userModel.findByIdAndUpdate(userId, { cartData: {} });
 
-    res.json({ success: true, message: "Order Placed" });
+    res.json({ success: true, message: "Order Placed Successfully" });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
@@ -57,15 +55,31 @@ const userOrders = async (req, res) => {
   }
 };
 
-// update order status
+// Update order status with statusHistory timeline tracking
 const updateStatus = async (req, res) => {
   try {
     const { orderId, status } = req.body;
 
-    await orderModel.findByIdAndUpdate(orderId, { status });
-    res.json({ success: true, message: "Status Updated" });
+    const order = await orderModel.findById(orderId);
+    if (!order) {
+      return res.json({ success: false, message: "Order not found" });
+    }
+
+    // إضافة الحالة الجديدة مع التوقيت الحالي لـ Timeline
+    const updatedHistory = order.statusHistory || [];
+    // منع التكرار إذا كانت نفس الحالة
+    if (!updatedHistory.some(item => item.status === status)) {
+      updatedHistory.push({ status, date: Date.now() });
+    }
+
+    await orderModel.findByIdAndUpdate(orderId, { 
+      status, 
+      statusHistory: updatedHistory 
+    });
+
+    res.json({ success: true, message: "Status Updated Successfully" });
   } catch (error) {
-    console.log(error); // تم تصحيح خطأ الإملاء هنا برضوا (conso.lpg -> console.log)
+    console.log(error);
     res.json({ success: false, message: error.message });
   }
 };

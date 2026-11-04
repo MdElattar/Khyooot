@@ -41,7 +41,7 @@ const Orders = ({ token }) => {
       );
       if (response.data.success) {
         await fetchAllOrders();
-        toast.success("Order status updated successfully");
+        toast.success("Order status updated & timeline recorded");
       }
     } catch (error) {
       console.log(error);
@@ -55,7 +55,6 @@ const Orders = ({ token }) => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-8 pt-28 pb-20 bg-white min-h-screen">
-      {/* Page Title */}
       <div className="border-b border-gray-100 w-full pb-4 mb-8">
         <h2 className="text-xl font-black text-gray-950 uppercase tracking-wider">
           Customer Orders Portal
@@ -80,12 +79,10 @@ const Orders = ({ token }) => {
               className="grid grid-cols-1 sm:grid-cols-[0.5fr_2fr_1fr] lg:grid-cols-[0.5fr_2fr_1fr_1fr_1fr] gap-6 items-start bg-white border border-gray-100 p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-md transition-all duration-300 text-xs sm:text-sm text-gray-700"
               key={index}
             >
-              {/* Parcel Icon */}
               <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center flex-shrink-0">
                 <img className="w-6 opacity-80" src={assets.parcel_icon} alt="Parcel" />
               </div>
 
-              {/* Order Items & Customer Info */}
               <div className="space-y-3">
                 <div className="space-y-1 pb-3 border-b border-gray-100">
                   {order.items.map((item, idx) => (
@@ -119,7 +116,6 @@ const Orders = ({ token }) => {
                 </div>
               </div>
 
-              {/* Payment & Date Info */}
               <div className="space-y-1.5 text-xs">
                 <div className="flex items-center gap-1.5">
                   <span className="text-gray-400">Method:</span>
@@ -141,14 +137,12 @@ const Orders = ({ token }) => {
                 </p>
               </div>
 
-              {/* Amount */}
               <div>
                 <p className="text-base font-black text-gray-950 font-serif">
                   {currency} {order.amount}
                 </p>
               </div>
 
-              {/* Status Select Dropdown */}
               <div>
                 <select
                   onChange={(event) => StatusHandler(event, order._id)}

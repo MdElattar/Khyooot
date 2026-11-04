@@ -1,15 +1,28 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../context/ShopContext';
-import Title from '../components/Title';
 import ProductItem from '../components/ProductItem';
+import { useLocation } from 'react-router-dom'; // 1. استيراد useLocation لقراءة البيانات الممررة من الصفحة الرئيسية
 
 const Collection = () => {
     const { products } = useContext(ShopContext);
+    const location = useLocation(); // 2. تفعيل الـ location
+    
     const [showFilter, setShowFilter] = useState(false);
     const [filterProducts, setFilterProducts] = useState([]);
     const [category, setCategory] = useState([]);
     const [subCategory, setSubCategory] = useState([]);
     const [sortType, setSortType] = useState('revalent');
+
+    // 3. قراءة الفئة القادمة من البوكسات في الصفحة الرئيسية وتفعيلها تلقائياً
+    useEffect(() => {
+      if (location.state?.selectedCategory) {
+        const clickedCategory = location.state.selectedCategory;
+        // نتأكد هل هي موجودة مسبقاً في الـ subCategory ولا لاء عشان ميعملش تكرار
+        if (!subCategory.includes(clickedCategory)) {
+          setSubCategory([clickedCategory]);
+        }
+      }
+    }, [location.state]);
 
     const toggleCategory = (e) => {
       if (category.includes(e.target.value)) {
@@ -105,6 +118,7 @@ const Collection = () => {
                         value={cat} 
                         type="checkbox" 
                         onChange={toggleCategory} 
+                        checked={category.includes(cat)} 
                       /> 
                       {cat}
                     </label>
@@ -124,7 +138,8 @@ const Collection = () => {
                         className='w-4 h-4 rounded border-gray-300 text-[#003459] focus:ring-[#003459]' 
                         value={type} 
                         type="checkbox" 
-                        onChange={toggleSubCategory} 
+                        onChange={toggleSubCategory}
+                        checked={subCategory.includes(type)} // جعل الـ Checkbox يعلم أوتوماتيكياً لو جاية من الرئيسية
                       /> 
                       {type}
                     </label>
