@@ -8,7 +8,7 @@ import hoodiesImg from '../assets/frontend_assets/ArabianBurghandy.jpeg';
 import crownecksImg from '../assets/frontend_assets/CAVARLY5.jpg'; 
 import jacketsImg from '../assets/frontend_assets/jackets.jpeg';
 import tshirtsImg from '../assets/frontend_assets/tshirt3.jpeg';
-import babeteesImg from '../assets/frontend_assets/BabeTee.jpeg';
+import babeteesImg from '../assets/frontend_assets/Babe Tee.jpeg';
 
 const BestSeller = () => {
     const { products } = useContext(ShopContext);
