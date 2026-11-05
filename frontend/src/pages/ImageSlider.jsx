@@ -8,10 +8,10 @@ import image4 from '../assets/frontend_assets/image4.jpeg';
 
 // --- Slides Data with All 4 Images and Categories for Filtering ---
 const slides = [
-    { url: image1, title: 'KHYOOT WINTER HOODIE', category: 'Hoodies' },
-    { url: image2, title: 'KHYOOT BABETEES', category: 'Babetees' },
-    { url: image3, title: 'KHYOOT ARABIAN WEAVE', category: 'Crownecks' },
-    { url: image4, title: 'KHYOOT SIGNATURE TEE', category: 'TShirts' },
+    { url: image1, title: '', category: 'Hoodies' },
+    { url: image2, title: '', category: 'Babetees' },
+    { url: image3, title: '', category: 'Crownecks' },
+    { url: image4, title: '', category: 'TShirts' },
 ];
 
 const ImageSlider = ({ autoPlay = true, interval = 4000 }) => {
@@ -64,7 +64,7 @@ const ImageSlider = ({ autoPlay = true, interval = 4000 }) => {
                         {/* Text Overlay and Button */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-20">
                             <span className="text-white/70 text-xs sm:text-sm font-semibold tracking-[0.3em] uppercase mb-3 animate-fade-in">
-                                New Collection 2026
+                               
                             </span>
                             <h2 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-widest text-white drop-shadow-2xl mb-8 uppercase max-w-4xl">
                                 {slide.title}
