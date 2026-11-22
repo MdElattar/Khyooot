@@ -15,11 +15,32 @@ import "react-toastify/dist/ReactToastify.css";
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "L.E";
 
+// Client-side guard only: the server is the authority for admin authorization.
+// This prevents an arbitrary localStorage string from unlocking the admin UI.
+const readStoredAdminToken = () => {
+  const stored = localStorage.getItem("token");
+  if (!stored) return "";
+  try {
+    let encoded = stored.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    while (encoded.length % 4) encoded += "=";
+    const payload = JSON.parse(atob(encoded));
+    if (payload.role !== "admin" || (payload.exp && payload.exp * 1000 <= Date.now())) {
+      localStorage.removeItem("token");
+      return "";
+    }
+    return stored;
+  } catch {
+    localStorage.removeItem("token");
+    return "";
+  }
+};
+
 const App = () => {
-  const [token, setToken] = useState(localStorage.getItem("token")?localStorage.getItem('token'):'');
+  const [token, setToken] = useState(readStoredAdminToken);
 
   useEffect(() => {
-      localStorage.setItem("token", token);
+    if (token) localStorage.setItem("token", token);
+    else localStorage.removeItem("token");
   }, [token]);
 
   return (

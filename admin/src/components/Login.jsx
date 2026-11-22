@@ -25,7 +25,7 @@ const Login = ({ setToken }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.response?.data?.message || "Something went wrong");
     } finally {
       setLoading(false);
@@ -59,7 +59,7 @@ const Login = ({ setToken }) => {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="admin@khyoot.com"
+              placeholder="Admin email address"
               className="w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-2xl text-sm transition-all outline-none focus:border-gray-900 focus:bg-white shadow-sm"
             />
           </div>

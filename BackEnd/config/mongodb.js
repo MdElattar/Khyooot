@@ -1,24 +1,20 @@
 import mongoose from "mongoose";
+import "./mongoose.js";
+import { logError, logInfo } from "../utils/logger.js";
 
 const connectDB = async () => {
-    try {
-        mongoose.connection.on('connected', () => {
-            console.log("DB Connected successfully!");
-        });
+  if (!process.env.MONGODB_URI) throw new Error("MONGODB_URI is required");
 
-        mongoose.connection.on('error', (err) => {
-            console.log("Mongoose connection error:", err.message);
-        });
+  mongoose.connection.on("connected", () => logInfo("database_connected"));
+  mongoose.connection.on("error", (error) => {
+    logError("database_error", { name: error?.name, code: error?.code });
+  });
 
-        await mongoose.connect(process.env.MONGODB_URI, {
-            family: 4,
-            tls: true,
-            tlsAllowInvalidCertificates: true,
-            tlsAllowInvalidHostnames: true,
-        });
-    } catch (error) {
-        console.error("DB Connection failed:", error.message);
-    }
-}
+  // TLS certificate and hostname verification remain enabled (no bypass flags).
+  await mongoose.connect(process.env.MONGODB_URI, {
+    family: 4,
+    serverSelectionTimeoutMS: 10000,
+  });
+};
 
 export default connectDB;

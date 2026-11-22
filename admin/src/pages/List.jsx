@@ -35,7 +35,7 @@ const List = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -58,7 +58,7 @@ const List = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.message);
     }
   };
@@ -132,7 +132,7 @@ const List = ({ token }) => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.message);
     } finally {
       setUpdating(false);

@@ -1,43 +1,28 @@
-import jwt from "jsonwebtoken";
+import { fail } from "../utils/http.js";
+import { logSecurity } from "../utils/logger.js";
+import { extractBearerToken, verifyToken } from "../utils/tokens.js";
 
-const adminAuth = async (req, res, next) => {
+const adminAuth = (req, res, next) => {
+  const raw = req.headers.token || req.headers.authorization;
+  const token = extractBearerToken(raw);
+
+  if (!token || token.length > 2048) {
+    logSecurity("admin_auth_missing_token", { path: req.path });
+    return fail(res, 401, "Authentication required");
+  }
+
   try {
-    const { token } = req.headers;
-
-    if (!token) {
-      return res.json({
-        success: false,
-        message: "Not Authorized Login Again"
-      });
+    const payload = verifyToken(token);
+    if (payload.role !== "admin") {
+      logSecurity("admin_auth_wrong_role", { path: req.path, expected: "admin" });
+      return fail(res, 403, "Not authorized");
     }
-
-    // تحقق مرن: لو التوكن مطابق للنص السري أو تم فكه بنجاح
-    try {
-      const token_decode = jwt.verify(token, process.env.JWT_SECRET);
-      if (
-        token_decode ===
-        process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD
-      ) {
-        return next();
-      }
-    } catch (err) {
-      // لو الـ verify ضرب خطأ jwt malformed بسبب إن التتوكن نص عادي، نقارنه مباشرة لو محطوط كقيمة
-      if (token === process.env.ADMIN_EMAIL + process.env.ADMIN_PASSWORD) {
-        return next();
-      }
-    }
-
-    return res.json({
-      success: false,
-      message: "Not Authorized Login Again"
-    });
-
-  } catch (error) {
-    console.log("Auth Error:", error.message);
-    return res.json({
-      success: false,
-      message: "Session expired, please login again"
-    });
+    req.admin = { subject: payload.sub };
+    return next();
+  } catch {
+    // The legacy email+password string is deliberately NOT accepted here.
+    logSecurity("admin_auth_invalid_token", { path: req.path });
+    return fail(res, 401, "Authentication required");
   }
 };
 

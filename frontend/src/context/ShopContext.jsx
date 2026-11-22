@@ -44,7 +44,7 @@ const ShopContextProvider = (props) => {
         setCartItems(cartObject);
       }
     } catch (error) {
-      console.log("Get cart error:", error);
+      console.log("Get cart failed with status", error.response?.status);
     }
   };
 
@@ -71,7 +71,7 @@ const ShopContextProvider = (props) => {
         getUserCart(); // sync after add
       }
     } catch (error) {
-      console.log("Add to cart error:", error);
+      console.log("Add to cart failed with status", error.response?.status);
     }
     toast.success("Product Added ")
   };
@@ -93,7 +93,7 @@ const updateCart = async (variantId, action) => {
         getUserCart(); // sync after update
       }
     } catch (error) {
-      console.log("Update cart error:", error);
+      console.log("Update cart failed with status", error.response?.status);
     }
   };
 
@@ -117,20 +117,15 @@ const updateCart = async (variantId, action) => {
   };
 
 const getCartAmount = () => {
+    // Cart entries use { productId, size, color, count } and keys are
+    // "<productId>_<size>_<color>". Price comes from the catalog only.
     let totalAmount = 0;
-    for (const itemsKey in cartItems) {
-        // Extract the base product ID to find the price
-        let productId = itemsKey.split('_')[0];
-        let itemInfo = products.find((product) => product._id === productId);
-        
-        for (const size in cartItems[itemsKey]) {
-            try {
-                if (cartItems[itemsKey][size] > 0) {
-                    totalAmount += itemInfo.price * cartItems[itemsKey][size];
-                }
-            } catch (error) {
-                // Ignore if itemInfo isn't found yet
-            }
+    for (const [variantId, entry] of Object.entries(cartItems)) {
+        const productId = variantId.split('_')[0];
+        const itemInfo = products.find((product) => product._id === productId);
+        const count = Number(entry?.count);
+        if (itemInfo && Number.isFinite(count) && count > 0) {
+            totalAmount += Number(itemInfo.price) * count;
         }
     }
     return totalAmount;
@@ -148,7 +143,7 @@ const getCartAmount = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.message);
     }
   };

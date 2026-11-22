@@ -34,7 +34,7 @@ const Orders = () => {
         setOrders(response.data.orders.reverse());
       }
     } catch (error) {
-      console.log(error.message);
+      console.log("Request failed with status", error.response?.status);
       toast.error("Failed to load your orders");
     } finally {
       setLoading(false);

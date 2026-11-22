@@ -97,7 +97,7 @@ const Add = ({ token }) => {
         toast.error(response.data.message || "Complete The Empty Inputs");
       }
     } catch (error) {
-      console.error("ERROR:", error.response?.data || error.message);
+      console.error("Product submission failed with status", error.response?.status);
       toast.error(error.message);
     } finally {
       setLoading(false);

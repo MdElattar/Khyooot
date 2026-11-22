@@ -1,36 +1,31 @@
-import express from "express";
-import cors from "cors";
-import "dotenv/config" 
+import "dotenv/config";
+import app from "./app.js";
 import connectDB from "./config/mongodb.js";
 import connectCloudinary from "./config/cloudinary.js";
-import userRouter from "./routes/userRoute.js";
-import productRouter from "./routes/productRoute.js";
-import cartRouter from "./routes/cartRoute.js";
-import orderRouter from "./routes/orderRoutes.js";
-// import authUser from "./middleware/auth.js";
+import { validateEnvironment } from "./config/env.js";
+import { logError, logInfo } from "./utils/logger.js";
 
-// App config 
-const app = express()
-const port = process.env.PORT || 4000
+const port = process.env.PORT || 4000;
 
-// connect data base 
-connectDB();
+const start = async () => {
+  validateEnvironment();
+  await connectDB();
+  await connectCloudinary();
 
-// connect cloudinary 
-connectCloudinary()
+  app.listen(port, () => logInfo("server_started", { port: Number(port) }));
+};
 
-// middleware
-app.use(express.json())
-app.use(cors())
+process.on("unhandledRejection", (error) => {
+  logError("unhandled_rejection", { name: error?.name, code: error?.code });
+  process.exit(1);
+});
 
-// api endpoints 
-app.use('/api/user', userRouter)
-app.use('/api/product',productRouter)
-app.use("/api/cart", cartRouter);
-app.use("/api/order", orderRouter);
+process.on("uncaughtException", (error) => {
+  logError("uncaught_exception", { name: error?.name, code: error?.code });
+  process.exit(1);
+});
 
-app.get('/',(req,res)=>{
-    res.send("API Working")
-})
-
-app.listen(port, ()=> console.log('Server Started on port: '+port))
+start().catch((error) => {
+  logError("startup_failed", { name: error?.name, code: error?.code });
+  process.exit(1);
+});

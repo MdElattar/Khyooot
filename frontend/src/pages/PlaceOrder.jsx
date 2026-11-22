@@ -15,9 +15,7 @@ const PlaceOrder = () => {
     token,
     cartItems,
     setCartItems,
-    delivery_fee,
     products,
-    getCartAmount,
   } = useContext(ShopContext);
 
   const [step, setStep] = useState(
@@ -109,16 +107,21 @@ const PlaceOrder = () => {
         return;
       }
 
-      const orderData = {
-        address: formData,
-        items: orderItems,
-        amount: getCartAmount() + delivery_fee,
-        paymentMethod: paymentMethod === "instapay" ? "InstaPay" : "Cash on Delivery",
-      };
+      const method = paymentMethod === "instapay" ? "InstaPay" : "Cash on Delivery";
+
+      // Totals are recalculated on the server from the database-backed cart.
+      // The receipt is actually transmitted for manual InstaPay verification.
+      let payload = { address: formData, paymentMethod: method };
+      if (receiptImage) {
+        payload = new FormData();
+        payload.append("address", JSON.stringify(formData));
+        payload.append("paymentMethod", method);
+        payload.append("receipt", receiptImage);
+      }
 
       const response = await axios.post(
         backendUrl + "/api/order/place",
-        orderData,
+        payload,
         { headers: { token } }
       );
 
@@ -134,7 +137,7 @@ const PlaceOrder = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.error("Order Submission Error:", error);
+      console.error("Order submission failed with status", error.response?.status);
       toast.error(error.response?.data?.message || "Something went wrong");
     }
   };

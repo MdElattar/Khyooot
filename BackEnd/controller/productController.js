@@ -1,66 +1,39 @@
-import { v2 as cloudinary } from "cloudinary";
 import productModel from "../models/productModel.js";
+import { fail } from "../utils/http.js";
+import { uploadImageBuffer } from "../utils/imageUpload.js";
+import { logInfo, logSecurity } from "../utils/logger.js";
+import { readObjectId } from "../utils/validation.js";
+
+const getValidated = (req) => {
+  if (!req.validated) throw Object.assign(new Error("Validation required"), { status: 500 });
+  return req.validated;
+};
 
 // Function for add product
 const addProduct = async (req, res) => {
   try {
-    const {
-      name,
-      description,
-      price,
-      category,
-      subCategory,
-      sizes,
-      colors,
-      sizesStock, // استقبال مخزون المقاسات
-      bestseller,
-    } = req.body;
-    
-    const image1 = req.files.image1 && req.files.image1[0];
-    const image2 = req.files.image2 && req.files.image2[0];
-    const image3 = req.files.image3 && req.files.image3[0];
-    const image4 = req.files.image4 && req.files.image4[0];
+    const fields = getValidated(req);
+    const files = req.files || {};
+    const images = [files.image1, files.image2, files.image3, files.image4].filter(Boolean).flat();
 
-    const images = [image1, image2, image3, image4].filter(
-      (item) => item !== undefined
-    );
+    const imagesUrl = [];
+    for (const file of images) {
+      imagesUrl.push((await uploadImageBuffer(file, "khyoot/products")).url);
+    }
 
-    let imagesUrl = await Promise.all(
-      images.map(async (item) => {
-        let result = await cloudinary.uploader.upload(item.path, {
-          resource_type: "image",
-        });
-        return result.secure_url;
-      })
-    );
-
-    const parsedSizesStock = sizesStock ? JSON.parse(sizesStock) : {};
-    
-    // حساب الإجمالي التلقائي للمخزون
-    const totalStock = Object.values(parsedSizesStock).reduce((acc, val) => acc + Number(val || 0), 0);
-
-    const productData = {
-      name,
-      description,
-      category,
-      price: Number(price),
-      subCategory,
-      stock: totalStock,
-      sizesStock: parsedSizesStock,
-      bestseller: bestseller === "true" ? true : false,
-      sizes: sizes ? JSON.parse(sizes) : [],
-      colors: colors ? JSON.parse(colors) : [],
+    await productModel.create({
+      ...fields,
       image: imagesUrl,
       date: Date.now(),
-    };
+    });
 
-    const product = new productModel(productData);
-    await product.save();
-
-    res.json({ success: true, message: "Product Added Successfully" });
+    logInfo("product_added");
+    return res.json({ success: true, message: "Product Added Successfully" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    if (error?.publicMessage) return fail(res, 400, error.publicMessage);
+    if (error?.name === "MulterError") return fail(res, 400, "Invalid upload");
+    logSecurity("product_add_error", { name: error?.name });
+    return fail(res, 500, "Something went wrong");
   }
 };
 
@@ -68,62 +41,58 @@ const addProduct = async (req, res) => {
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({});
-    res.json({ success: true, products });
+    return res.json({ success: true, products });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    logSecurity("product_list_error", { name: error?.name });
+    return fail(res, 500, "Something went wrong");
   }
 };
 
 // Function for removing product
 const removeProduct = async (req, res) => {
   try {
-    await productModel.findByIdAndDelete(req.body.id);
-    res.json({ success: true, message: "Product removed" });
+    const id = readObjectId(req.body?.id);
+    const result = await productModel.findByIdAndDelete(id);
+    if (!result) return fail(res, 404, "Product not found");
+    logInfo("product_removed", { productId: id });
+    return res.json({ success: true, message: "Product removed" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    if (error?.publicMessage) return fail(res, 400, error.publicMessage);
+    logSecurity("product_remove_error", { name: error?.name });
+    return fail(res, 500, "Something went wrong");
   }
 };
 
-// Function for single product Info
+// Function for single product info
 const singleProduct = async (req, res) => {
   try {
-    const { productId } = req.body;
+    const productId = readObjectId(req.body?.productId);
     const product = await productModel.findById(productId);
-    res.json({ success: true, product });
+    if (!product) return fail(res, 404, "Product not found");
+    return res.json({ success: true, product });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    if (error?.publicMessage) return fail(res, 400, error.publicMessage);
+    logSecurity("product_single_error", { name: error?.name });
+    return fail(res, 500, "Something went wrong");
   }
 };
 
-// Function for updating product details
+// Function for updating product details (admin only at the route level)
 const updateProduct = async (req, res) => {
   try {
-    const { id, name, description, price, category, subCategory, sizes, colors, sizesStock, bestseller } = req.body;
-
-    const parsedSizesStock = typeof sizesStock === "string" ? JSON.parse(sizesStock) : (sizesStock || {});
-    const totalStock = Object.values(parsedSizesStock).reduce((acc, val) => acc + Number(val || 0), 0);
-
-    const updateData = {
-      name,
-      description,
-      price: Number(price),
-      category,
-      subCategory,
-      stock: totalStock,
-      sizesStock: parsedSizesStock,
-      bestseller: bestseller === "true" || bestseller === true,
-      sizes: typeof sizes === "string" ? JSON.parse(sizes) : sizes,
-      colors: typeof colors === "string" ? JSON.parse(colors) : colors,
-    };
-
-    await productModel.findByIdAndUpdate(id, updateData);
-    res.json({ success: true, message: "Product Updated Successfully" });
+    const id = readObjectId(req.body?.id);
+    const fields = getValidated(req);
+    const result = await productModel.findByIdAndUpdate(id, fields, {
+      runValidators: true,
+      new: true,
+    });
+    if (!result) return fail(res, 404, "Product not found");
+    logInfo("product_updated", { productId: id });
+    return res.json({ success: true, message: "Product Updated Successfully" });
   } catch (error) {
-    console.log(error);
-    res.json({ success: false, message: error.message });
+    if (error?.publicMessage) return fail(res, 400, error.publicMessage);
+    logSecurity("product_update_error", { name: error?.name });
+    return fail(res, 500, "Something went wrong");
   }
 };
 

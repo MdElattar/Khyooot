@@ -25,7 +25,7 @@ const Orders = ({ token }) => {
         toast.error(response.data.message || "Failed to load orders");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.message);
     } finally {
       setLoading(false);
@@ -44,8 +44,26 @@ const Orders = ({ token }) => {
         toast.success("Order status updated & timeline recorded");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.response?.data?.message || "Failed to update status");
+    }
+  };
+
+  const confirmPayment = async (orderId) => {
+    try {
+      const response = await axios.post(
+        backendUrl + "/api/order/verify-payment",
+        { orderId },
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        toast.success("InstaPay payment confirmed");
+        await fetchAllOrders();
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to confirm payment");
     }
   };
 
@@ -132,6 +150,27 @@ const Orders = ({ token }) => {
                     {order.payment ? "Done" : "Pending"}
                   </span>
                 </p>
+                {!order.payment && order.paymentMethod?.toLowerCase() === 'instapay' && (
+                  <div className="flex flex-col gap-1.5 pt-1">
+                    {order.paymentProof && (
+                      <a
+                        href={order.paymentProof}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-purple-700 underline text-[11px]"
+                      >
+                        View transfer receipt
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => confirmPayment(order._id)}
+                      className="w-fit px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold"
+                    >
+                      Confirm after bank check
+                    </button>
+                  </div>
+                )}
                 <p className="text-gray-400">
                   Date: <span className="text-gray-700">{new Date(order.date).toLocaleDateString()}</span>
                 </p>

@@ -54,7 +54,7 @@ const Login = () => {
         toast.error(response.data.message);
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
@@ -122,7 +122,7 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.log(error);
+      console.log("Request failed with status", error.response?.status);
       toast.error(error.response?.data?.message || 'Something went wrong');
     } finally {
       setLoading(false);
